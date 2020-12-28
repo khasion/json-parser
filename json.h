@@ -24,8 +24,21 @@ public:
 	std::string getString();
 	std::string getBool();
 	Value getNext();
+	/*<-------- Comparisson Operator Overloading------>*/
 	Value &operator[](Value &v);
 	Value &operator,(Value &v);
+	Value &operator+(Value &v);
+	Value &operator-(Value &v1);
+	Value &operator*(Value &v1);
+	Value &operator/(Value &v1);
+	Value &operator%(Value &v1);
+	Value &operator>(Value &v1);
+	Value &operator<(Value &v1);
+	Value &operator>=(Value &v1);
+	Value &operator<=(Value &v1);
+	Value &operator&&(Value &v1);
+	Value &operator||(Value &v1);
+	Value &operator!(void);
 
 private:
 	vType type;
@@ -66,17 +79,4 @@ public:
 		}
 		return os;
 	}
-	/*<-------- Comparisson Operator Overloading------>*/
-	friend Json &operator+(Json &j1, Json &j2);
-	friend Json &operator-(Json &j1, Json &j2);
-	friend Json &operator*(Json &j1, Json &j2);
-	friend Json &operator/(Json &j1, Json &j2);
-	friend Json &operator%(Json &j1, Json &j2);
-	friend Json &operator>(Json &j1, Json &j2);
-	friend Json &operator<(Json &j1, Json &j2);
-	friend Json &operator>=(Json &j1, Json &j2);
-	friend Json &operator<=(Json &j1, Json &j2);
-	friend Json &operator&&(Json &j1, Json &j2);
-	friend Json &operator||(Json &j1, Json &j2);
-	friend Json &operator!(Json &j);
 };

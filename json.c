@@ -73,7 +73,7 @@ Json &Json::operator=(Value &v)
    return *this;
 }
 
-Json &Json::operator+(Json &j1, Json &j2)
+Value &Value::operator+(Value &v)
 {
    switch (j1.getVal().getType())
    {
