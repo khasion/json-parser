@@ -73,298 +73,356 @@ Json &Json::operator=(Value &v)
    return *this;
 }
 
-Value &Value::operator+(Value &v)
+Value &Value::operator+(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_num:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_num:
-         Json jnew = Value::Value(j1.getVal() + j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_num:
+            Value newval = Value::Value(v1 + v2);
+            return newval;
 
+            break;
+         default:
+            throw 1;
+            break;
+         }
          break;
-      default:
-         cout << "JSON values are not compatible" << endl;
-         break;
-      }
-      break;
-   case t_string:
-      switch (j2.getVal().getType())
-      {
       case t_string:
-         std::string str;
-         Json jnew = Value::Value(str.append(j1.getVal(), j2.getVal()));
-         return jnew;
-
-         break;
-      default:
-         cout << "JSON values are not compatible" << endl;
-         break;
+         switch (v2.getType())
+         {
+         case t_string:
+            std::string str;
+            Value newval = Value::Value(str.append(v1, v2));
+            return newval;
+            break;
+         default:
+            throw 2;
+         }
       }
       break;
       /*<---- Need to add + overload for OBJECT and ARRAY types later---->*/
    default:
       break;
    }
-}
-
-Json &Json::operator-(Json &j1, Json &j2)
-{
-   switch (j1.getVal().getType())
+   catch (int e)
    {
-   case t_num:
-      switch (j2.getVal().getType())
-      {
-      case t_num:
-         Json jnew = Value::Value(j1.getVal() - j2.getVal());
-         return jnew;
-
-         break;
-
-      default:
-         cout << "JSON values are not both numeric" << endl;
-         break;
-      }
-      break;
-
-   default:
-      cout << "Error: Attempted subtraction with non-numeric value" << endl;
-      break;
+      cout << "JSON values are not compatible" << endl;
    }
 }
 
-Json &Json::operator*(Json &j1, Json &j2)
+Value &Value::operator-(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_num:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_num:
-         Json jnew = Value::Value(j1.getVal() * j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_num:
+            Value newval = Value::Value(v1 - v2);
+            return newval;
 
+            break;
+
+         default:
+            throw 1;
+         }
          break;
 
       default:
-         cout << "JSON values are not both numeric" << endl;
-         break;
+         throw 2;
       }
-      break;
-
-   default:
-      cout << "Error: Attempted multiplication with non-numeric value" << endl;
-      break;
+   }
+   catch (int e)
+   {
+      cout << "JSON values are not both numeric" << endl;
    }
 }
 
-Json &Json::operator/(Json &j1, Json &j2)
+Value &Value::operator*(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_num:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_num:
-         Json jnew = Value::Value(j1.getVal() - j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_num:
+            Value newval = Value::Value(v1 * v2);
+            return newval;
+            break;
 
+         default:
+            throw 1;
+         }
          break;
 
       default:
-         cout << "JSON values are not both numeric" << endl;
-         break;
+         throw 2;
       }
-      break;
+   }
+   catch (int e)
+   {
+      cout << "JSON values are not both numeric" << endl;
+   }
+}
 
-   default:
+Value &Value::operator/(Value &v1, Value &v2)
+{
+   try
+   {
+      switch (v1.getType())
+      {
+      case t_num:
+         switch (v2.getType())
+         {
+         case t_num:
+            Value newval = Value::Value(v1 - v2);
+            return newval;
+            break;
+
+         default:
+            throw 2;
+         }
+         break;
+
+      default:
+         throw 1;
+      }
+   }
+   catch (int e)
+   {
       cout << "Error: Attempted division with non-numeric value" << endl;
-      break;
    }
 }
 
-Json &Json::operator%(Json &j1, Json &j2)
+Value &Value::operator%(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_num:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_num:
-         Json jnew = Value::Value(j1.getVal() - j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_num:
+            Value newval = Value::Value(v1 - v2);
+            return newval;
+            break;
 
+         default:
+            throw 2;
+         }
          break;
 
       default:
-         cout << "JSON values are not both numeric" << endl;
-         break;
+         throw 1;
       }
-      break;
-
-   default:
+   }
+   catch (int e)
+   {
       cout << "Error: Attempted division with non-numeric value (modulo)" << endl;
-      break;
    }
 }
 
-Json &Json::operator<(Json &j1, Json &j2)
+Value &Value::operator<(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_num:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_num:
-         Json jnew = Value::Value(j1.getVal() < j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_num:
+            Value newval = Value::Value(v1 < v2);
+            return newval;
 
+            break;
+
+         default:
+            throw 2;
+         }
          break;
 
       default:
-         cout << "JSON values are not both numeric" << endl;
-         break;
+         throw 1;
       }
-      break;
-
-   default:
+   }
+   catch (int e)
+   {
       cout << "Error: Attempted comparisson with non-numeric value" << endl;
-      break;
    }
 }
 
-Json &Json::operator<=(Json &j1, Json &j2)
+Value &Value::operator<=(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_num:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_num:
-         Json jnew = Value::Value(j1.getVal() <= j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_num:
+            Value newval = Value::Value(v1 <= v2);
+            return newval;
+            break;
+
+         default:
+            throw 2;
+         }
          break;
 
       default:
-         cout << "JSON values are not both numeric" << endl;
-         break;
+         throw 1;
       }
-      break;
-
-   default:
+   }
+   catch (int e)
+   {
       cout << "Error: Attempted comparisson with non-numeric value" << endl;
-      break;
    }
 }
 
-Json &Json::operator>(Json &j1, Json &j2)
+Value &Value::operator>(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_num:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_num:
-         Json jnew = Value::Value(j1.getVal() > j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_num:
+            Value newval = Value::Value(v1 > v2);
+            return newval;
+            break;
+
+         default:
+            throw 2;
+         }
          break;
 
       default:
-         cout << "JSON values are not both numeric" << endl;
-         break;
+         throw 1;
       }
-      break;
-
-   default:
+   }
+   catch (int e)
+   {
       cout << "Error: Attempted comparisson with non-numeric value" << endl;
-      break;
    }
 }
 
-Json &Json::operator>=(Json &j1, Json &j2)
+Value &Value::operator>=(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_num:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_num:
-         Json jnew = Value::Value(j1.getVal() >= j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_num:
+            Value newval = Value::Value(v1 >= v2);
+            return newval;
+            break;
+
+         default:
+            throw 2;
+         }
          break;
 
       default:
-         cout << "JSON values are not both numeric" << endl;
-         break;
+         throw 1;
       }
-      break;
-
-   default:
+   }
+   catch (int e)
+   {
       cout << "Error: Attempted comparisson with non-numeric value" << endl;
-      break;
    }
 }
 
-Json &Json::operator&&(Json &j1, Json &j2)
+Value &Value::operator&&(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_bool:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_bool:
-         Json jnew = Value::Value(j1.getVal() && j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_bool:
+            Value newval = Value::Value(v1 && v2);
+            return newval;
+            break;
+
+         default:
+            throw 2;
+         }
          break;
 
       default:
-         cout << "JSON values are not both boolean" << endl;
-         break;
+         throw 1;
       }
-      break;
-
-   default:
+   }
+   catch (int e)
+   {
       cout << "Error: Attempted logical comparisson with non-boolean values" << endl;
-      break;
    }
 }
 
-Json &Json::operator||(Json &j1, Json &j2)
+Value &Value::operator||(Value &v1, Value &v2)
 {
-   switch (j1.getVal().getType())
+   try
    {
-   case t_bool:
-      switch (j2.getVal().getType())
+      switch (v1.getType())
       {
       case t_bool:
-         Json jnew = Value::Value(j1.getVal() || j2.getVal());
-         return jnew;
+         switch (v2.getType())
+         {
+         case t_bool:
+            Value newval = Value::Value(v1 || v2);
+            return newval;
+            break;
+
+         default:
+            throw 2;
+         }
          break;
 
       default:
-         cout << "JSON values are not both boolean" << endl;
-         break;
+         throw 1;
       }
-      break;
-
-   default:
+   }
+   catch (int e)
+   {
       cout << "Error: Attempted logical comparisson with non-boolean values" << endl;
-      break;
    }
 }
 
-Json &Json::operator!(Json &j)
+Value &Value::operator!(Json &j)
 {
-   switch (j.getVal().getType())
+   try
    {
-   case t_bool:
-      bool val = j.getVal();
-      Json jnew = Value::Value(!val);
-      return jnew;
-   default:
+      switch (j.getVal().getType())
+      {
+      case t_bool:
+         bool val = j.getVal();
+         Value newval = Value::Value(!val);
+         return newval;
+      default:
+         throw 1;
+      }
+   }
+   catch (int e)
+   {
       cout << "Error: Attempted logical comparisson with non-boolean values" << endl;
-      break;
    }
 }
