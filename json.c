@@ -2,427 +2,278 @@
 
 Value::Value()
 {
-   next = NULL;
-   type = t_null;
+	next = NULL;
+	type = t_null;
 }
 
 Value::Value(int n)
 {
-   next = NULL;
-   type = t_num;
-   this->n = n;
+	next = NULL;
+	type = t_num;
+	this->n = n;
 }
 Value::Value(std::string str)
 {
-   next = NULL;
-   type = t_string;
-   this->str = str;
+	next = NULL;
+	type = t_string;
+	this->str = str;
 }
 Value::Value(bool b)
 {
-   next = NULL;
-   type = t_bool;
-   this->b = b;
+	next = NULL;
+	type = t_bool;
+	this->b = b;
 }
 
-vType Value::getType()
-{
-   return type;
-}
-
-int Value::getNum()
-{
-   return n;
-}
-std::string Value::getString()
-{
-   return str;
-}
-std::string Value::getBool()
-{
-   return (b ? "true" : "false");
+std::string Value::toString (void) {
+	std::string tmp;
+	switch (this->getType()) {
+		case t_null:
+			tmp = "NULL";
+			break;
+		case t_num:
+			tmp = std::to_string(this->n);
+			break;
+		case t_string:
+			tmp = this->str;
+			break;
+		case t_bool:
+			tmp = (b ? "TRUE" : "FALSE");
+			break;
+		default:
+			tmp = "";
+			break;
+	}
+	return tmp;
 }
 
 Value &Value::operator[](Value &v)
 {
-   this->v.push_back(v);
-   return this->v[0];
+	return v;
 }
 
 Value &Value::operator,(Value &v)
 {
-   next = &v;
-   return *this;
+	if (next == NULL) {next = &v;}
+	else {
+		Value *tmp = next;
+		while (tmp->next) {
+			tmp = tmp->next;
+		}
+		tmp->next = &v;
+	}
+	return *this;
 }
 
-Value Value::getNext()
+Value &Value::operator+(Value& v)
 {
-   return next;
+	Value* tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		switch (this->getType())
+		{
+		case t_num:
+			tmp = new Value(this->getNum() + v.getNum());
+			break;
+		case t_string:
+			tmp = new Value(this->getString().append(v.getString()));
+			break;
+		case t_array:
+			tmp->setType(t_array);
+			break;
+		case t_object:
+			break;
+		default:
+			throw 1;
+			break;
+		}
+		/*<---- Need to add + overload for OBJECT and ARRAY types later---->*/
+	}
+	catch (int e)
+	{
+		std::cout << "JSON values are not compatible" << std::endl;
+	}
+	return *tmp;	
 }
 
-Json::Json() {}
-
-Value Json::getVal()
+Value &Value::operator-(Value &v)
 {
-   return val;
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		if (this->getType() != t_num) throw 2;
+		tmp = new Value(this->getNum() - v.getNum());
+	}
+	catch (int e)
+	{
+		std::cout << "JSON values are not both numeric" << std::endl;
+	}
+	return *tmp;
 }
 
-Json &Json::operator=(Value &v)
+Value &Value::operator*(Value &v)
 {
-   val = v;
-   return *this;
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		if (this->getType() != t_num) throw 2;
+		tmp = new Value(this->getNum() * v.getNum());
+	}
+	catch (int e)
+	{
+		std::cout << "JSON values are not both numeric" << std::endl;
+	}
+	return *tmp;
 }
 
-Value &Value::operator+(Value &v1, Value &v2)
+Value &Value::operator/(Value &v)
 {
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_num:
-         switch (v2.getType())
-         {
-         case t_num:
-            Value newval = Value::Value(v1 + v2);
-            return newval;
-
-            break;
-         default:
-            throw 1;
-            break;
-         }
-         break;
-      case t_string:
-         switch (v2.getType())
-         {
-         case t_string:
-            std::string str;
-            Value newval = Value::Value(str.append(v1, v2));
-            return newval;
-            break;
-         default:
-            throw 2;
-         }
-      }
-      break;
-      /*<---- Need to add + overload for OBJECT and ARRAY types later---->*/
-   default:
-      break;
-   }
-   catch (int e)
-   {
-      cout << "JSON values are not compatible" << endl;
-   }
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		if (this->getType() != t_num) throw 2;
+		tmp = new Value(this->getNum() / v.getNum());
+	}
+	catch (int e)
+	{
+		std::cout << "Error: Attempted division with non-numeric value" << std::endl;
+	}
+	return *tmp;
 }
 
-Value &Value::operator-(Value &v1, Value &v2)
+Value &Value::operator%(Value &v)
 {
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_num:
-         switch (v2.getType())
-         {
-         case t_num:
-            Value newval = Value::Value(v1 - v2);
-            return newval;
-
-            break;
-
-         default:
-            throw 1;
-         }
-         break;
-
-      default:
-         throw 2;
-      }
-   }
-   catch (int e)
-   {
-      cout << "JSON values are not both numeric" << endl;
-   }
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType()!= v.getType()) throw 1;
+		if (this->getType() != t_num) throw 2;
+		tmp = new Value(this->getNum() % v.getNum());
+	}
+	catch (int e)
+	{
+		std::cout << "Error: Attempted division with non-numeric value (modulo)" << std::endl;
+	}
+	return *tmp;
 }
 
-Value &Value::operator*(Value &v1, Value &v2)
+Value &Value::operator<(Value &v)
 {
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_num:
-         switch (v2.getType())
-         {
-         case t_num:
-            Value newval = Value::Value(v1 * v2);
-            return newval;
-            break;
-
-         default:
-            throw 1;
-         }
-         break;
-
-      default:
-         throw 2;
-      }
-   }
-   catch (int e)
-   {
-      cout << "JSON values are not both numeric" << endl;
-   }
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		if (this->getType() != t_num) throw 2;
+		tmp = new Value(this->getNum() < v.getNum());
+	}
+	catch (int e)
+	{
+		std::cout << "Error: Attempted comparisson with non-numeric value" << std::endl;
+	}
+	return *tmp;
 }
 
-Value &Value::operator/(Value &v1, Value &v2)
+Value &Value::operator<=(Value &v)
 {
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_num:
-         switch (v2.getType())
-         {
-         case t_num:
-            Value newval = Value::Value(v1 - v2);
-            return newval;
-            break;
-
-         default:
-            throw 2;
-         }
-         break;
-
-      default:
-         throw 1;
-      }
-   }
-   catch (int e)
-   {
-      cout << "Error: Attempted division with non-numeric value" << endl;
-   }
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		if (this->getType() != t_num) throw 2;
+		tmp = new Value(this->getNum() <= v.getNum());
+	}
+	catch (int e)
+	{
+		std::cout << "Error: Attempted comparisson with non-numeric value" << std::endl;
+	}
+	return *tmp;
 }
 
-Value &Value::operator%(Value &v1, Value &v2)
+Value &Value::operator>(Value &v)
 {
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_num:
-         switch (v2.getType())
-         {
-         case t_num:
-            Value newval = Value::Value(v1 - v2);
-            return newval;
-            break;
-
-         default:
-            throw 2;
-         }
-         break;
-
-      default:
-         throw 1;
-      }
-   }
-   catch (int e)
-   {
-      cout << "Error: Attempted division with non-numeric value (modulo)" << endl;
-   }
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		if (this->getType() != t_num) throw 2;
+		tmp = new Value(this->getNum() > v.getNum());
+	}
+	catch (int e)
+	{
+		std::cout << "Error: Attempted comparisson with non-numeric value" << std::endl;
+	}
+	return *tmp;
 }
 
-Value &Value::operator<(Value &v1, Value &v2)
+Value &Value::operator>=(Value &v)
 {
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_num:
-         switch (v2.getType())
-         {
-         case t_num:
-            Value newval = Value::Value(v1 < v2);
-            return newval;
-
-            break;
-
-         default:
-            throw 2;
-         }
-         break;
-
-      default:
-         throw 1;
-      }
-   }
-   catch (int e)
-   {
-      cout << "Error: Attempted comparisson with non-numeric value" << endl;
-   }
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		if (this->getType() != t_num) throw 2;
+		tmp = new Value(this->getNum() >= v.getNum());
+	}
+	catch (int e)
+	{
+		std::cout << "Error: Attempted comparisson with non-numeric value" << std::endl;
+	}
+	return *tmp;
 }
 
-Value &Value::operator<=(Value &v1, Value &v2)
+Value &Value::operator&&(Value &v)
 {
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_num:
-         switch (v2.getType())
-         {
-         case t_num:
-            Value newval = Value::Value(v1 <= v2);
-            return newval;
-            break;
-
-         default:
-            throw 2;
-         }
-         break;
-
-      default:
-         throw 1;
-      }
-   }
-   catch (int e)
-   {
-      cout << "Error: Attempted comparisson with non-numeric value" << endl;
-   }
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		if (this->getType() != t_bool) throw 2;
+		tmp = new Value(this->getBool() && v.getBool());
+	}
+	catch (int e)
+	{
+		std::cout << "Error: Attempted logical comparisson with non-boolean values" << std::endl;
+	}
+	return *tmp;
 }
 
-Value &Value::operator>(Value &v1, Value &v2)
+Value &Value::operator||(Value &v)
 {
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_num:
-         switch (v2.getType())
-         {
-         case t_num:
-            Value newval = Value::Value(v1 > v2);
-            return newval;
-            break;
-
-         default:
-            throw 2;
-         }
-         break;
-
-      default:
-         throw 1;
-      }
-   }
-   catch (int e)
-   {
-      cout << "Error: Attempted comparisson with non-numeric value" << endl;
-   }
+	Value *tmp = NULL;
+	try
+	{
+		if (this->getType() != v.getType()) throw 1;
+		if (this->getType() != t_bool) throw 2;
+		tmp = new Value(this->getBool() || v.getBool());
+	}
+	catch (int e)
+	{
+		std::cout << "Error: Attempted logical comparisson with non-boolean values" << std::endl;
+	}
+	return *tmp;
 }
 
-Value &Value::operator>=(Value &v1, Value &v2)
+Value &Value::operator!()
 {
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_num:
-         switch (v2.getType())
-         {
-         case t_num:
-            Value newval = Value::Value(v1 >= v2);
-            return newval;
-            break;
-
-         default:
-            throw 2;
-         }
-         break;
-
-      default:
-         throw 1;
-      }
-   }
-   catch (int e)
-   {
-      cout << "Error: Attempted comparisson with non-numeric value" << endl;
-   }
-}
-
-Value &Value::operator&&(Value &v1, Value &v2)
-{
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_bool:
-         switch (v2.getType())
-         {
-         case t_bool:
-            Value newval = Value::Value(v1 && v2);
-            return newval;
-            break;
-
-         default:
-            throw 2;
-         }
-         break;
-
-      default:
-         throw 1;
-      }
-   }
-   catch (int e)
-   {
-      cout << "Error: Attempted logical comparisson with non-boolean values" << endl;
-   }
-}
-
-Value &Value::operator||(Value &v1, Value &v2)
-{
-   try
-   {
-      switch (v1.getType())
-      {
-      case t_bool:
-         switch (v2.getType())
-         {
-         case t_bool:
-            Value newval = Value::Value(v1 || v2);
-            return newval;
-            break;
-
-         default:
-            throw 2;
-         }
-         break;
-
-      default:
-         throw 1;
-      }
-   }
-   catch (int e)
-   {
-      cout << "Error: Attempted logical comparisson with non-boolean values" << endl;
-   }
-}
-
-Value &Value::operator!(Json &j)
-{
-   try
-   {
-      switch (j.getVal().getType())
-      {
-      case t_bool:
-         bool val = j.getVal();
-         Value newval = Value::Value(!val);
-         return newval;
-      default:
-         throw 1;
-      }
-   }
-   catch (int e)
-   {
-      cout << "Error: Attempted logical comparisson with non-boolean values" << endl;
-   }
+	Value *tmp = NULL;
+	try
+	{
+		switch (this->getType())
+		{
+		case t_bool:
+			tmp = new Value(!this->getBool());
+			break;
+		default:
+			throw 1;
+		}
+	}
+	catch (int e)
+	{
+		std::cout << "Error: Attempted logical comparisson with non-boolean values" << std::endl;
+	}
+	return *tmp;
 }

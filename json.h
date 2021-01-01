@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <map>
+#include <utility>
 #include <vector>
 
 enum vType
@@ -9,7 +9,8 @@ enum vType
 	t_num,
 	t_string,
 	t_bool,
-	t_array
+	t_array,
+	t_object
 };
 
 class Value
@@ -19,34 +20,42 @@ public:
 	Value(int n);
 	Value(std::string str);
 	Value(bool b);
-	vType getType();
-	int getNum();
-	std::string getString();
-	std::string getBool();
-	Value getNext();
-	/*<-------- Comparisson Operator Overloading------>*/
-	Value &operator[](Value &v);
-	Value &operator,(Value &v);
-	Value &operator+(Value &v);
-	Value &operator-(Value &v1);
-	Value &operator*(Value &v1);
-	Value &operator/(Value &v1);
-	Value &operator%(Value &v1);
-	Value &operator>(Value &v1);
-	Value &operator<(Value &v1);
-	Value &operator>=(Value &v1);
-	Value &operator<=(Value &v1);
-	Value &operator&&(Value &v1);
-	Value &operator||(Value &v1);
-	Value &operator!(void);
+	/*Getters */
+	vType getType() 			{ return type;}
+	int getNum() 				{ return n;}
+	std::string getString() { return str;}
+	bool getBool() 			{ return b;}
+	Value* getNext() 			{ return next;}
+	/*Setters */
+	void setType (vType t) 				{ this->type = t;}
+	void setNum(int n) 					{ this->n = n;}
+	void setString (std::string str) { this->str = str;}
+	void setBool(bool b) 				{ this->b = b;}
+	void setNext(Value& v) 				{ this->next = &v;}
 
+	std::string toString(void);
+	/*<-------- Comparisson Operator Overloading------>*/
+	Value &operator[](Value& v);
+	Value &operator,(Value& v);
+	Value &operator+(Value& v);
+	Value &operator-(Value& v);
+	Value &operator*(Value& v);
+	Value &operator/(Value& v);
+	Value &operator%(Value& v);
+	Value &operator>(Value& v);
+	Value &operator<(Value& v);
+	Value &operator>=(Value& v);
+	Value &operator<=(Value& v);
+	Value &operator&&(Value& v);
+	Value &operator||(Value& v);
+	Value &operator!(void);
 private:
 	vType type;
 	int n;
 	std::string str;
 	bool b;
-	std::vector<Value> v;
-	Value *next;
+	std::pair<Value*, Value*> pair;
+	Value* next;
 };
 
 class Json
@@ -54,29 +63,21 @@ class Json
 private:
 	Value val;
 public:
-	Json();
-	Value getVal();
-	Json &operator=(Value &v);
+	Json() {}
+	Value& getVal() 				{ return val;}
+	Json &operator=(Value v) 	{val = v; return *this;}
+
 	friend std::ostream &operator<<(std::ostream &os, Json &j)
 	{
-		Value v = j.getVal();
-		switch (v.getType())
-		{
-		case t_null:
-			os << "NULL" << std::endl;
-			break;
-		case t_num:
-			os << v.getNum() << std::endl;
-			break;
-		case t_string:
-			os << v.getString() << std::endl;
-			break;
-		case t_bool:
-			os << v.getBool() << std::endl;
-			break;
-		case t_array:
-			break;
+		Value* v = &j.getVal();
+		os << "{";
+		while (v) {
+			os << v->toString();
+			v = v->getNext();
+			if (v) os << ", ";
 		}
+		os << "}";
+		os << std::endl;
 		return os;
 	}
 };

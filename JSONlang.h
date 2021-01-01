@@ -4,10 +4,11 @@
 
 #define NUMBER(n) *(new Value(n))
 #define STRING(str) *(new Value(std::string(str)))
+#define KEY(name) *(new Value(std::string(name)))
 #define TRUE *(new Value(true))
 #define FALSE *(new Value(false))
 #define ARRAY (*(new Value()))
-#define OBJECT *(new Value())
+#define OBJECT enum 
 
 #define PRINT ;std::cout <<
 
