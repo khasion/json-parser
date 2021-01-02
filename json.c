@@ -49,7 +49,9 @@ std::string Value::toString (void) {
 
 Value &Value::operator[](Value &v)
 {
-	return v;
+	this->next = &v;
+	this->type = t_array;
+	return *this;
 }
 
 Value &Value::operator,(Value &v)
@@ -67,7 +69,8 @@ Value &Value::operator,(Value &v)
 
 Value &Value::operator+(Value& v)
 {
-	Value* tmp = NULL;
+	Value* tmp 	= NULL;
+	Value* tmp2 = NULL;
 	try
 	{
 		if (this->getType() != v.getType()) throw 1;
@@ -80,7 +83,12 @@ Value &Value::operator+(Value& v)
 			tmp = new Value(this->getString().append(v.getString()));
 			break;
 		case t_array:
-			tmp->setType(t_array);
+			tmp2 = this;
+			while (tmp2->getNext()) {
+				tmp2 = tmp2->getNext();
+			}
+			tmp2->setNext(*v.getNext());
+			tmp = this;
 			break;
 		case t_object:
 			break;

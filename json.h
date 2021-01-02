@@ -21,11 +21,11 @@ public:
 	Value(std::string str);
 	Value(bool b);
 	/*Getters */
-	vType getType() 			{ return type;}
-	int getNum() 				{ return n;}
-	std::string getString() { return str;}
-	bool getBool() 			{ return b;}
-	Value* getNext() 			{ return next;}
+	vType 		getType() 	{ return type;}
+	int 			getNum() 	{ return n;}
+	std::string getString()	{ return str;}
+	bool 			getBool() 	{ return b;}
+	Value* 		getNext() 	{ return next;}
 	/*Setters */
 	void setType (vType t) 				{ this->type = t;}
 	void setNum(int n) 					{ this->n = n;}
@@ -72,9 +72,11 @@ public:
 		Value* v = &j.getVal();
 		os << "{";
 		while (v) {
-			os << v->toString();
+			if (v->getType() != t_array) {
+				os << v->toString();
+				if (v->getNext()) os << ", ";
+			}
 			v = v->getNext();
-			if (v) os << ", ";
 		}
 		os << "}";
 		os << std::endl;
