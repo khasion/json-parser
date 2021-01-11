@@ -6,19 +6,17 @@ void DFS (std::ostream &os, Value* v) {
 		os << v->toString();
 	}
 
-	if (v->getType() == t_array) {
-		os << "[";
-	}
+	if (v->getType() == t_array) {os << "[";}
+	if (v->getType() == t_object) {os << "{";}
 	for (auto it = e.cbegin(); it != e.cend(); ++it) {
-		if (v->getType() != t_array 
+		if ( (v->getType() != t_array && v->getType() != t_object)
 				|| it != e.cbegin()) {
 				os << ", ";
 		}
 		DFS(os, *it);
 	}
-	if (v->getType() == t_array) {
-		os << "]";
-	}
+	if (v->getType() == t_array) {os << "]";}
+	if (v->getType() == t_object) {os << "}";}
 }
 
 Value::Value()
@@ -46,6 +44,16 @@ Value::Value(bool b)
 	this->b = b;
 }
 
+Value::Value (std::initializer_list<Value> v) {
+	type = t_object;
+	for (auto it = v.begin(); it != v.end(); ++it) {
+		Value* temp = new Value();
+		temp->setType(t_pair);
+		temp->setPair((*it).pair);
+		edges.push_back(temp);
+	}
+}
+
 std::string Value::toString (void) {
 	std::string tmp;
 	switch (this->getType()) {
@@ -61,6 +69,9 @@ std::string Value::toString (void) {
 		case t_bool:
 			tmp = (b ? "TRUE" : "FALSE");
 			break;
+		case t_pair:
+			tmp = this->pair.first->toString() + " : " + this->pair.second->toString();
+			break;
 		default:
 			tmp = "";
 			break;
@@ -75,16 +86,15 @@ Value &Value::operator[](Value &v)
 	return *this;
 }
 
+Value &Value::operator>>=(Value& v) {
+	this->type = t_pair;
+	this->pair = std::make_pair(new Value(this->str), &v);
+	this->edges.push_back(&v);
+	return *this;
+}
+
 Value &Value::operator,(Value &v)
 {
-	/*if (next == NULL) {next = &v;}
-	else {
-		Value *tmp = next;
-		while (tmp->next) {
-			tmp = tmp->next;
-		}
-		tmp->next = &v;
-	}*/
 	edges.push_back(&v);
 	return *this;
 }

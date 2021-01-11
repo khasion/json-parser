@@ -2,13 +2,13 @@
 
 #define JSON(name) ;Json name; name
 
-#define NUMBER(n) *(new Value(n))
-#define STRING(str) *(new Value(std::string(str)))
-#define KEY(name) *(new Value(std::string(name)))
-#define TRUE *(new Value(true))
-#define FALSE *(new Value(false))
-#define ARRAY (*(new Value()))
-#define OBJECT enum 
+#define NUMBER(n) *new Value(n)
+#define STRING(str) *new Value(std::string(str))
+#define KEY(str) *new Value(std::string(#str)) >>= (false) ? *new Value()
+#define TRUE *new Value(true)
+#define FALSE *new Value(false)
+#define ARRAY (*new Value())
+#define OBJECT *new Value
 
 #define PRINT ;std::cout <<
 
