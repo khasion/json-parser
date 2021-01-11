@@ -1,6 +1,6 @@
 CC=g++
 
 make:	
-	$(CC) json.c json_main.c -o parser
+	$(CC) json.cpp json_main.cpp -o parser
 clean:
 	rm parser

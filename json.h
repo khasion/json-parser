@@ -21,17 +21,18 @@ public:
 	Value(std::string str);
 	Value(bool b);
 	/*Getters */
-	vType 		getType() 	{ return type;}
-	int 			getNum() 	{ return n;}
-	std::string getString()	{ return str;}
-	bool 			getBool() 	{ return b;}
-	Value* 		getNext() 	{ return next;}
+	vType 						getType() 		{ return type;}
+	int 							getNum() 		{ return n;}
+	std::string 				getString()		{ return str;}
+	bool 							getBool() 		{ return b;}
+	Value* 						getNext(int i) { return (i < edges.size()) ? edges[i] : NULL;}
+	std::vector<Value*> 		getEdges(void)	{ return edges;}
 	/*Setters */
 	void setType (vType t) 				{ this->type = t;}
 	void setNum(int n) 					{ this->n = n;}
 	void setString (std::string str) { this->str = str;}
 	void setBool(bool b) 				{ this->b = b;}
-	void setNext(Value& v) 				{ this->next = &v;}
+	void setNext(Value& v) 				{ edges.push_back(&v);}
 
 	std::string toString(void);
 	/*<-------- Comparisson Operator Overloading------>*/
@@ -55,8 +56,10 @@ private:
 	std::string str;
 	bool b;
 	std::pair<Value*, Value*> pair;
-	Value* next;
+	std::vector<Value*> edges;
 };
+
+void DFS (std::ostream &os, Value* v);
 
 class Json
 {
@@ -69,15 +72,10 @@ public:
 
 	friend std::ostream &operator<<(std::ostream &os, Json &j)
 	{
+		int i = 0;
 		Value* v = &j.getVal();
 		os << "{";
-		while (v) {
-			if (v->getType() != t_array) {
-				os << v->toString();
-				if (v->getNext()) os << ", ";
-			}
-			v = v->getNext();
-		}
+		DFS(os, v);
 		os << "}";
 		os << std::endl;
 		return os;
