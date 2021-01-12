@@ -13,7 +13,14 @@ PROGRAM_BEGIN
 	JSON(obj) = OBJECT {
 		KEY(first) 	: STRING("GIANNIS"),
 		KEY(last)	: STRING("KASIONIS"),
-		KEY(AM)		: NUMBER(3521)
+		KEY(AM)		: NUMBER(3521),
+		KEY(grades)	: ARRAY[NUMBER(10), NUMBER(9), NUMBER(8), NUMBER(7)],
+		KEY(array)	: ARRAY[
+			OBJECT {
+				KEY(kati) 	: NUMBER(8),
+				KEY(allo)	: ARRAY[STRING("KATI"), STRING("ALLO")]
+			}
+		]
 	}
 	PRINT num
 	PRINT str

@@ -23,22 +23,30 @@ public:
 	Value (bool b);
 	Value (std::initializer_list<Value> v);
 	/*Getters */
-	vType 							getType(void) 	{ return type;}
-	int 								getNum(void) 	{ return n;}
-	std::string 					getString(void){ return str;}
-	bool 								getBool(void) 	{ return b;}
-	Value* 							getNext(int i) { return (i < edges.size()) ? edges[i] : NULL;}
-	std::vector<Value*> 			getEdges(void)	{ return edges;}
-	std::pair<Value*,Value*>	getPair(void)	{ return pair;}
+	vType 					getType(void) 	{ return type;}
+	int 						getNum(void) 	{ return n;}
+	std::string 			getString(void){ return str;}
+	bool 						getBool(void) 	{ return b;}
+	Value* 					getNext(int i) { return (i < edges.size()) ? edges[i] : NULL;}
+	std::vector<Value*> 	getEdges(void)	{ return edges;}
+	std::string				getKey(void)	{ return key;}
 	/*Setters */
-	void setType (vType _t) 							{ type = _t;}
-	void setNum(int _n) 									{ n = _n;}
-	void setString (std::string _str) 				{ str = _str;}
-	void setBool(bool _b) 								{ b = _b;}
-	void setNext(Value& _v) 							{ edges.push_back(&_v);}
-	void setPair(std::pair<Value*,Value*> _pair) { pair = std::make_pair(_pair.first, _pair.second);}
+	void setType (vType _t) 				{ type = _t;}
+	void setNum(int _n) 						{ n = _n;}
+	void setString (std::string _str)	{ str = _str;}
+	void setBool(bool _b) 					{ b = _b;}
+	void setNext(Value& _v) 				{ edges.push_back(&_v);}
+	void setKey(std::string _key) 		{ key = _key;}
 
 	std::string toString(void);
+	void Clone (Value v) {
+		key 	= v.getKey();
+		type 	= v.getType();
+		n		= v.getNum();
+		str	= v.getString();
+		b		= v.getBool();
+		edges	= v.getEdges();
+	}
 	/*<-------- Comparisson Operator Overloading------>*/
 	Value &operator[](Value& v);
 	Value &operator>>=(Value& v);
@@ -55,8 +63,8 @@ public:
 	Value &operator&&(Value& v);
 	Value &operator||(Value& v);
 	Value &operator!(void);
-	std::pair<Value*, Value*> pair;
 private:
+	std::string key = "";
 	vType type;
 	int n;
 	std::string str;

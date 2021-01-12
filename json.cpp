@@ -2,9 +2,7 @@
 
 void DFS (std::ostream &os, Value* v) {
 	std::vector<Value*> e = v->getEdges();
-	if (v->getType() != t_array) {
-		os << v->toString();
-	}
+	os << v->toString();
 
 	if (v->getType() == t_array) {os << "[";}
 	if (v->getType() == t_object) {os << "{";}
@@ -21,25 +19,21 @@ void DFS (std::ostream &os, Value* v) {
 
 Value::Value()
 {
-	//next = NULL;
 	type = t_null;
 }
 
 Value::Value(int n)
 {
-	//next = NULL;
 	type = t_num;
 	this->n = n;
 }
 Value::Value(std::string str)
 {
-	//next = NULL;
 	type = t_string;
 	this->str = str;
 }
 Value::Value(bool b)
 {
-	//next = NULL;
 	type = t_bool;
 	this->b = b;
 }
@@ -48,32 +42,32 @@ Value::Value (std::initializer_list<Value> v) {
 	type = t_object;
 	for (auto it = v.begin(); it != v.end(); ++it) {
 		Value* temp = new Value();
-		temp->setType(t_pair);
-		temp->setPair((*it).pair);
+		temp->Clone ((*it));
 		edges.push_back(temp);
 	}
 }
 
 std::string Value::toString (void) {
-	std::string tmp;
+	std::string tmp = "";
+
+	if (this->key.size() > 0) {
+		tmp += key + " : ";
+	}
+
 	switch (this->getType()) {
 		case t_null:
-			tmp = "NULL";
+			tmp += "NULL";
 			break;
 		case t_num:
-			tmp = std::to_string(this->n);
+			tmp += std::to_string(this->n);
 			break;
 		case t_string:
-			tmp = this->str;
+			tmp += this->str;
 			break;
 		case t_bool:
-			tmp = (b ? "TRUE" : "FALSE");
-			break;
-		case t_pair:
-			tmp = this->pair.first->toString() + " : " + this->pair.second->toString();
+			tmp += (b ? "TRUE" : "FALSE");
 			break;
 		default:
-			tmp = "";
 			break;
 	}
 	return tmp;
@@ -87,9 +81,12 @@ Value &Value::operator[](Value &v)
 }
 
 Value &Value::operator>>=(Value& v) {
-	this->type = t_pair;
-	this->pair = std::make_pair(new Value(this->str), &v);
-	this->edges.push_back(&v);
+	key 	= str;
+	type 	= v.getType();
+	n 		= v.getNum();
+	str 	= v.getString();
+	b		= v.getBool();
+	edges	= v.getEdges();
 	return *this;
 }
 
