@@ -1,6 +1,6 @@
 #include "json.h"
 
-void DFS (std::ostream &os, Value* v) {
+void dfs_print (std::ostream &os, Value* v) {
 	std::vector<Value*> e = v->getEdges();
 	os << v->toString();
 
@@ -11,10 +11,46 @@ void DFS (std::ostream &os, Value* v) {
 				|| it != e.cbegin()) {
 				os << ", ";
 		}
-		DFS(os, *it);
+		dfs_print(os, *it);
 	}
 	if (v->getType() == t_array) {os << "]";}
 	if (v->getType() == t_object) {os << "}";}
+}
+
+Value &dfs_find (std::string str, Value* v) {
+	std::string k = v->getKey();
+	if (k.compare(str) == 0) {
+		return *v;
+	}
+	std::vector<Value*> e = v->getEdges();
+	for (auto it = e.cbegin(); it != e.cend(); ++it) {
+		Value& v = dfs_find(str, *it);
+		if (v.getType() != t_null) { return v;}
+	}
+	return *(new Value());
+}
+
+Value &Json::operator[](int n) {
+	Value* v = val.getIndex(0);
+	if (n == 0) { 
+		return *v;
+	}
+	return *(v->getIndex(n-1));
+}
+
+Value &Json::operator[](std::string s) {
+	if (val.getKey().compare(s) == 0) { return val;}
+	std::vector<Value*> e = val.getEdges();
+	if (!e.empty()) {
+		Value* v;
+		for (auto it = e.cbegin(); it != e.cend(); ++it) {
+			if ((*it)->getKey().compare(s) == 0) {
+				v->Clone(*it);
+				return *v;
+			}
+		}
+	}
+	return *(new Value());
 }
 
 Value::Value()
@@ -22,7 +58,7 @@ Value::Value()
 	type = t_null;
 }
 
-Value::Value(int n)
+Value::Value(double n)
 {
 	type = t_num;
 	this->n = n;
@@ -58,6 +94,7 @@ std::string Value::toString (void) {
 		case t_null:
 			tmp += "NULL";
 			break;
+		case t_float:
 		case t_num:
 			tmp += std::to_string(this->n);
 			break;
@@ -73,11 +110,41 @@ std::string Value::toString (void) {
 	return tmp;
 }
 
+Value &Value::operator<<=(Value &v) {
+	std::vector<Value*> e_tmp;
+	std::string k_tmp;
+	e_tmp = this->edges;
+	k_tmp = this->key;
+	this->Clone(v);
+	this->edges = e_tmp;
+	this->key = k_tmp;
+	return *this;
+}
 Value &Value::operator[](Value &v)
 {
 	this->edges.push_back(&v);
 	this->type = t_array;
 	return *this;
+}
+Value &Value::operator[](int n) {
+	Value* v = getIndex(0);
+	if (n == 0) { 
+		return *v;
+	}
+	return *(v->getIndex(n-1));
+
+}
+Value &Value::operator[](std::string s) {
+	if (getKey().compare(s) == 0) { return *this;}
+	std::vector<Value*> e = getEdges();
+	Value* v;
+	for (auto it = e.cbegin(); it != e.cend(); ++it) {
+		if ((*it)->getKey().compare(s) == 0) {
+			v = *it;
+			return *v;
+		}
+	}
+	return *(new Value());
 }
 
 Value &Value::operator>>=(Value& v) {
@@ -185,7 +252,8 @@ Value &Value::operator%(Value &v)
 	{
 		if (this->getType()!= v.getType()) throw 1;
 		if (this->getType() != t_num) throw 2;
-		tmp = new Value(this->getNum() % v.getNum());
+		int n1 = this->getNum(), n2 = v.getNum();
+		tmp = new Value((double)(n1 % n2));
 	}
 	catch (int e)
 	{

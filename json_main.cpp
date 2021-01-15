@@ -11,7 +11,7 @@ PROGRAM_BEGIN
 		ARRAY [STRING("World"), STRING("I'm")] +
 		ARRAY [STRING("CSD") + STRING("3521")]
 	JSON(obj) = OBJECT {
-		KEY(first) 	: STRING("GIANNIS"),
+		KEY(first)	: STRING("GIANNIS"),
 		KEY(last)	: STRING("KASIONIS"),
 		KEY(AM)		: NUMBER(3521),
 		KEY(grades)	: ARRAY[NUMBER(10), NUMBER(9), NUMBER(8), NUMBER(7)],
@@ -22,7 +22,24 @@ PROGRAM_BEGIN
 			}
 		]
 	}
-	PRINT num
+	JSON(week_temp) = ARRAY [NUMBER(20), NUMBER(19.5), NUMBER(19), NUMBER(20),
+										NUMBER(19), NUMBER(18.5), NUMBER(19)]
+	JSON(std) = ARRAY [
+		OBJECT {
+			KEY(first)	: STRING("Giannis"),
+			KEY(last)	: STRING("Kasionis")
+		},
+		OBJECT {
+			KEY(first)	: STRING("Konstantinos"),
+			KEY(last)	: STRING("Papadakis")
+		}]
+	PRINT(week_temp)
+	SET week_temp[2] ASSIGN NUMBER(22)
+	PRINT(week_temp)
+	PRINT std
+	SET std[0]["last"] ASSIGN STRING("edited")
+	PRINT(std)
+	/*PRINT num
 	PRINT str
 	PRINT emptyArray
 	PRINT boolt
@@ -30,4 +47,5 @@ PROGRAM_BEGIN
 	PRINT array
 	PRINT array_plus
 	PRINT obj
+	PRINT week_temp*/
 PROGRAM_END

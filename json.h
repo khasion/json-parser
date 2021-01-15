@@ -7,6 +7,7 @@ enum vType
 {
 	t_null,
 	t_num,
+	t_float,
 	t_string,
 	t_bool,
 	t_array,
@@ -18,25 +19,25 @@ class Value
 {
 public:
 	Value ();
-	Value (int n);
+	Value (double n);
 	Value (std::string str);
 	Value (bool b);
 	Value (std::initializer_list<Value> v);
 	/*Getters */
 	vType 					getType(void) 	{ return type;}
-	int 						getNum(void) 	{ return n;}
+	double 					getNum(void) 	{ return n;}
 	std::string 			getString(void){ return str;}
 	bool 						getBool(void) 	{ return b;}
-	Value* 					getNext(int i) { return (i < edges.size()) ? edges[i] : NULL;}
+	Value* 					getIndex(int i){ return (i < edges.size()) ? edges[i] : NULL;}
 	std::vector<Value*> 	getEdges(void)	{ return edges;}
 	std::string				getKey(void)	{ return key;}
 	/*Setters */
-	void setType (vType _t) 				{ type = _t;}
-	void setNum(int _n) 						{ n = _n;}
-	void setString (std::string _str)	{ str = _str;}
-	void setBool(bool _b) 					{ b = _b;}
-	void setNext(Value& _v) 				{ edges.push_back(&_v);}
-	void setKey(std::string _key) 		{ key = _key;}
+	void setVal (vType _t) 				{ type = _t;}
+	void setVal(double _n) 				{ n = _n;}
+	void setVal (std::string _str)	{ str = _str;}
+	void setVal(bool _b) 				{ b = _b;}
+	void setVal(Value& _v) 				{ edges.push_back(&_v);}
+	void setKey(std::string _key) 	{ key = _key;}
 
 	std::string toString(void);
 	void Clone (Value v) {
@@ -48,6 +49,9 @@ public:
 		edges	= v.getEdges();
 	}
 	/*<-------- Comparisson Operator Overloading------>*/
+	Value &operator<<=(Value& v);
+	Value &operator[](int);
+	Value &operator[](std::string);
 	Value &operator[](Value& v);
 	Value &operator>>=(Value& v);
 	Value &operator,(Value& v);
@@ -72,7 +76,8 @@ private:
 	std::vector<Value*> edges;
 };
 
-void DFS (std::ostream &os, Value* v);
+void 	dfs_print (std::ostream &os, Value* v);
+Value &dfs_find (std::string s, Value* v);
 
 class Json
 {
@@ -81,14 +86,16 @@ private:
 public:
 	Json() {}
 	Value& getVal() 				{ return val;}
-	Json &operator=(Value v) 	{val = v; return *this;}
+	Json &operator=(Value v) 	{ val = v; return *this;}
+	Value &operator[](int);
+	Value &operator[](std::string);
 
 	friend std::ostream &operator<<(std::ostream &os, Json &j)
 	{
 		int i = 0;
 		Value* v = &j.getVal();
 		os << "{";
-		DFS(os, v);
+		dfs_print(os, v);
 		os << "}";
 		os << std::endl;
 		return os;
