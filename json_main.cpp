@@ -39,6 +39,9 @@ PROGRAM_BEGIN
 	PRINT std
 	SET std[0]["last"] ASSIGN STRING("edited")
 	PRINT(std)
+	PRINT obj
+	SET obj["AM"] ASSIGN NUMBER(3522)
+	PRINT obj
 	/*PRINT num
 	PRINT str
 	PRINT emptyArray

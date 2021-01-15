@@ -45,7 +45,7 @@ Value &Json::operator[](std::string s) {
 		Value* v;
 		for (auto it = e.cbegin(); it != e.cend(); ++it) {
 			if ((*it)->getKey().compare(s) == 0) {
-				v->Clone(*it);
+				v = *it;
 				return *v;
 			}
 		}
