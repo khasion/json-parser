@@ -2,6 +2,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <sstream>
 
 enum vType
 {
@@ -26,10 +27,11 @@ public:
 	/*Getters */
 	vType 					getType(void) 	{ return type;}
 	double 					getNum(void) 	{ return n;}
-	std::string 			getString(void){ return str;}
+	std::string 			getString(void) {return str;}
 	bool 						getBool(void) 	{ return b;}
-	Value* 					getIndex(int i){ return (i < edges.size()) ? edges[i] : NULL;}
-	std::vector<Value*> 	getEdges(void)	{ return edges;}
+	Value* 					getIndex(int i) {return (i < edges.size()) ? edges[i] : NULL;}
+	std::vector<Value*>& getEdges(void)	{ return edges;}
+	Value*					getNext(void)	{ return next;}
 	std::string				getKey(void)	{ return key;}
 	/*Setters */
 	void setVal (vType _t) 				{ type = _t;}
@@ -48,7 +50,8 @@ public:
 		b		= v.getBool();
 		edges	= v.getEdges();
 	}
-	/*<-------- Comparisson Operator Overloading------>*/
+	/*<--------  Operator Overloading------>*/
+	Value &operator+=(Value& v);
 	Value &operator<<=(Value& v);
 	Value &operator[](int);
 	Value &operator[](std::string);
@@ -70,10 +73,11 @@ public:
 private:
 	std::string key = "";
 	vType type;
-	int n;
+	double n;
 	std::string str;
 	bool b;
 	std::vector<Value*> edges;
+	Value* next = nullptr;
 };
 
 void 	dfs_print (std::ostream &os, Value* v);
@@ -87,6 +91,8 @@ public:
 	Json() {}
 	Value& getVal() 				{ return val;}
 	Json &operator=(Value v) 	{ val = v; return *this;}
+	Json &operator+=(Value& v);
+	Json &operator<<=(Value& v);
 	Value &operator[](int);
 	Value &operator[](std::string);
 
