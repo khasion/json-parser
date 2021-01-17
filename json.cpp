@@ -31,19 +31,14 @@ Value &dfs_find (std::string str, Value* v) {
 }
 
 Value &Json::operator[](int n) {
-	Value* v = val.getIndex(0);
-	if (n == 0) { 
-		return *v;
-	}
-	return *(v->getIndex(n-1));
+	return *(val.getIndex(n));
 }
 
 Value &Json::operator[](std::string s) {
-
 	if (val.getKey().compare(s) == 0) { return val;}
 	std::vector<Value*> e = val.getEdges();
+	Value* v;
 	if (!e.empty()) {
-		Value* v;
 		for (auto it = e.cbegin(); it != e.cend(); ++it) {
 			if ((*it)->getKey().compare(s) == 0) {
 				v = *it;
@@ -51,7 +46,21 @@ Value &Json::operator[](std::string s) {
 			}
 		}
 	}
-	return *(new Value());
+	v = new Value();
+	val.getEdges().push_back(v);
+	return *v;
+}
+Json &Json::operator+=(Value& v) {
+	Value* tmp = &v;
+	while (tmp) {
+		val.getEdges().push_back(tmp);
+		tmp = tmp->getNext();
+	}
+	return *this;
+}
+Json &Json::operator<<=(Value& v) {
+	val.Clone(v);
+	return *this;
 }
 
 Value::Value()
@@ -86,6 +95,7 @@ Value::Value (std::initializer_list<Value> v) {
 
 std::string Value::toString (void) {
 	std::string tmp = "";
+	std::ostringstream ss;
 
 	if (this->key.size() > 0) {
 		tmp += key + " : ";
@@ -97,7 +107,8 @@ std::string Value::toString (void) {
 			break;
 		case t_float:
 		case t_num:
-			tmp += std::to_string(this->n);
+			ss << this->n;
+			tmp += ss.str();
 			break;
 		case t_string:
 			tmp += this->str;
@@ -111,41 +122,33 @@ std::string Value::toString (void) {
 	return tmp;
 }
 
-
-/*?????????????*/
 Value &Value::operator+=(Value &v){
-	std::vector<Value*> e_tmp;
-	std::string k_tmp;
-	e_tmp = this->edges;
-	e_tmp.push_back(this->Clone(v));
-	this->edges = e_tmp;
+	Value* tmp = &v;
+	while (tmp) {
+		this->edges.push_back(tmp);
+		tmp = tmp->next;
+	}
 	return *this;
 
 }
 
 Value &Value::operator<<=(Value &v) {
-	std::vector<Value*> e_tmp;
-	std::string k_tmp;
-	e_tmp = this->edges;
-	k_tmp = this->key;
 	this->Clone(v);
-	this->edges = e_tmp;
-	this->key = k_tmp;
 	return *this;
 }
 Value &Value::operator[](Value &v)
 {
-	this->edges.push_back(&v);
+	Value* tmp;
+	tmp = &v;
+	while (tmp) {
+		this->edges.push_back(tmp);
+		tmp = tmp->next;
+	}
 	this->type = t_array;
 	return *this;
 }
 Value &Value::operator[](int n) {
-	Value* v = getIndex(0);
-	if (n == 0) { 
-		return *v;
-	}
-	return *(v->getIndex(n-1));
-
+	return *(this->getIndex(n));
 }
 Value &Value::operator[](std::string s) {
 	if (getKey().compare(s) == 0) { return *this;}
@@ -157,7 +160,9 @@ Value &Value::operator[](std::string s) {
 			return *v;
 		}
 	}
-	return *(new Value());
+	v = new Value();
+	edges.push_back(v);
+	return *v;
 }
 
 Value &Value::operator>>=(Value& v) {
@@ -172,7 +177,11 @@ Value &Value::operator>>=(Value& v) {
 
 Value &Value::operator,(Value &v)
 {
-	edges.push_back(&v);
+	Value* tmp = this;
+	while (tmp->next) {
+		tmp = tmp->next;
+	}
+	tmp->next = &v;
 	return *this;
 }
 
@@ -196,6 +205,8 @@ Value &Value::operator+(Value& v)
 			tmp = this;
 			break;
 		case t_object:
+			this->edges.push_back(&v);
+			tmp = this;
 			break;
 		default:
 			throw 1;
