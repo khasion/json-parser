@@ -17,17 +17,13 @@ void dfs_print (std::ostream &os, Value* v) {
 	if (v->getType() == t_object) {os << "}";}
 }
 
-Value &dfs_find (std::string str, Value* v) {
-	std::string k = v->getKey();
-	if (k.compare(str) == 0) {
-		return *v;
-	}
+void dfs_erase (Value* v) {
 	std::vector<Value*> e = v->getEdges();
 	for (auto it = e.cbegin(); it != e.cend(); ++it) {
-		Value& v = dfs_find(str, *it);
-		if (v.getType() != t_null) { return v;}
+		dfs_erase(*it);
 	}
-	return *(new Value());
+	free(v);
+	v = (Value*)NULL;
 }
 
 Value &Json::operator[](int n) {
@@ -61,6 +57,11 @@ Json &Json::operator+=(Value& v) {
 Json &Json::operator<<=(Value& v) {
 	val.Clone(v);
 	return *this;
+}
+void Json::operator delete (void* j) {
+	dfs_erase(&((Json*)j)->getVal());
+	free(j);
+	j = (Json*)NULL;
 }
 
 Value::Value()
@@ -401,4 +402,7 @@ Value &Value::operator!()
 		std::cout << "Error: Attempted logical comparisson with non-boolean values" << std::endl;
 	}
 	return *tmp;
+}
+void Value::operator delete (void* v) {
+	dfs_erase((Value*)v);
 }

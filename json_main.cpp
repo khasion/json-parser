@@ -50,6 +50,8 @@ PROGRAM_BEGIN
 	SET empty_obj ASSIGN OBJECT{KEY(a) : STRING("alpha")}
 	SET empty_obj["new"] ASSIGN STRING("not found")
 	PRINT empty_obj
+	ERASE week_temp[1]
+	PRINT week_temp
 
 	/*SET obj["lesson"] ASSIGN NUMBER(3529)
 

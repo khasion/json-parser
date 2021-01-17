@@ -70,6 +70,8 @@ public:
 	Value &operator&&(Value& v);
 	Value &operator||(Value& v);
 	Value &operator!(void);
+
+	void	operator delete (void*);
 private:
 	std::string key = "";
 	vType type;
@@ -81,7 +83,7 @@ private:
 };
 
 void 	dfs_print (std::ostream &os, Value* v);
-Value &dfs_find (std::string s, Value* v);
+void dfs_erase (Value* v);
 
 class Json
 {
@@ -95,6 +97,7 @@ public:
 	Json &operator<<=(Value& v);
 	Value &operator[](int);
 	Value &operator[](std::string);
+	void	operator delete(void*);
 
 	friend std::ostream &operator<<(std::ostream &os, Json &j)
 	{

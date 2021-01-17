@@ -12,7 +12,7 @@
 #define SET ;
 #define ASSIGN <<=
 #define APPEND +=
-#define ERASE ; delete& 
+#define ERASE ; delete &
 
 #define PRINT ;std::cout <<
 
