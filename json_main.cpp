@@ -44,6 +44,7 @@ PROGRAM_BEGIN
 	PRINT std
 	SET std[0]["last"] ASSIGN KEY(last) : STRING("edited")
 	SET std[1]	APPEND OBJECT {KEY(AM) : NUMBER(1111)}
+	ERASE (std[0]["last"])
 	PRINT std
 
 	PRINT empty_obj

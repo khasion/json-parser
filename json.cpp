@@ -33,10 +33,12 @@ Value* dfs_find (std::string s, Value* v) {
 void removeFromParents (Value* v) {
 	std::vector<Value*> p = v->getParents();
 	for (auto it = p.cbegin(); it != p.cend(); ++it) {
-		std::vector<Value*> e = (*it)->getEdges();
-		for (auto jt = e.cbegin(); jt != e.cend(); ++jt) {
-			if ((*jt) == v) {jt = e.erase(jt);}
-			if (jt == e.cend()) { break;}
+		std::vector<Value*>& e = (*it)->getEdges();
+		if (!e.empty()) {
+			for (auto jt = e.cbegin(); jt != e.cend(); ++jt) {
+				if ((*jt) == v) {jt = e.erase(jt);}
+				if (jt == e.cend()) { break;}
+			}
 		}
 	}
 }
@@ -45,6 +47,7 @@ void dfs_erase (Value* v) {
 	if (!e.empty()) {
 		for (auto it = e.cbegin(); it != e.cend(); ++it) {
 			dfs_erase(*it);
+			if (it == e.cend()) { break;}
 		}
 	}
 	removeFromParents(v);
@@ -443,7 +446,7 @@ Value &Value::operator!()
 	return *tmp;
 }
 void Value::operator delete (void* v) {
-	dfs_erase(static_cast<Value*>(v));
+	dfs_erase((static_cast<Value*>(v)));
 }
 
 int sizeOf(Json obj){
@@ -495,4 +498,11 @@ std::string getType(Value *v){
 		case t_array:		return "array";
 		default :			return "object";
 	}
+}
+void erase(Json* j) {
+	dfs_erase(&(j->getVal()));
+	free(j);
+}
+void erase (Value* v) {
+	dfs_erase(v);
 }

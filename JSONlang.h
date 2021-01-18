@@ -12,7 +12,8 @@
 #define SET ;
 #define ASSIGN <<=
 #define APPEND +=
-#define ERASE ; delete &
+#define ERASE(x) ;erase(&x)
+//#define ERASE ;delete &
 
 #define SIZE_OF(x)		sizeOf(x)
 #define IS_EMPTY(x)		isEmpty(x)

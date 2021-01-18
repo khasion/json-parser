@@ -90,6 +90,7 @@ private:
 
 void 	dfs_print (std::ostream &os, Value* v);
 Value* dfs_find (std::string s, Value* v);
+void dfs_erase(Value* v);
 
 class Json
 {
@@ -124,3 +125,5 @@ std::string		hasKey(Json&, std::string);
 std::string		hasKey(Value*, std::string);
 std::string		getType(Json);
 std::string		getType(Value*);
+void 				erase(Json*);
+void 				erase(Value*);
