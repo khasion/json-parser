@@ -76,7 +76,6 @@ public:
 
 	friend std::ostream &operator<<(std::ostream &os, Value &v);
 
-	void operator delete (void*);
 private:
 	std::string key = "";
 	vType type;
@@ -104,8 +103,6 @@ public:
 	Json &operator<<=(Value& v);
 	Value &operator[](int);
 	Value &operator[](std::string);
-
-	void operator delete (void*);
 
 	friend std::ostream &operator<<(std::ostream &os, Json &j)
 	{

@@ -51,7 +51,7 @@ void dfs_erase (Value* v) {
 		}
 	}
 	removeFromParents(v);
-	free(v);
+	if (v->getType() != t_array && v->getType() != t_object) {free(v);}
 }
 
 Json::Json () {}
@@ -89,10 +89,6 @@ Json &Json::operator+=(Value& v) {
 Json &Json::operator<<=(Value& v) {
 	val.Clone(v);
 	return *this;
-}
-void Json::operator delete (void* j) {
-	dfs_erase(&(static_cast<Json*>(j))->getVal());
-	free(j);
 }
 
 Value::Value()
@@ -445,9 +441,6 @@ Value &Value::operator!()
 	}
 	return *tmp;
 }
-void Value::operator delete (void* v) {
-	dfs_erase((static_cast<Value*>(v)));
-}
 
 int sizeOf(Json obj){
 	return obj.getVal().getEdges().size();
@@ -472,6 +465,7 @@ std::string hasKey(Json& obj, std::string s) {
 }
 
 std::string hasKey(Value *v, std::string s){
+	if (!v) { return "FALSE";}
 	Value* tmp = dfs_find(s, v);
 	return (tmp != nullptr) ? "TRUE" : "FALSE";
 }
@@ -489,6 +483,7 @@ std::string getType(Json obj){
 }
 
 std::string getType(Value *v){
+	if (!v) {return "null";}
 	switch (v->getType()) {
 		case t_null: 		return "null";
 		case t_num:			return "number";
@@ -501,7 +496,6 @@ std::string getType(Value *v){
 }
 void erase(Json* j) {
 	dfs_erase(&(j->getVal()));
-	free(j);
 }
 void erase (Value* v) {
 	dfs_erase(v);
