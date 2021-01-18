@@ -18,6 +18,7 @@ void dfs_print (std::ostream &os, Value* v) {
 	if (v->getType() == t_object) {os << "}";}
 }
 Value* dfs_find (std::string s, Value* v) {
+	if (v == nullptr) { return nullptr;}
 	if (v->getKey().compare(s) == 0) {
 		return v;
 	}
@@ -57,12 +58,14 @@ void dfs_erase (Value* v) {
 Json::Json () {}
 
 Value &Json::operator[](int n) {
-	return *(val.getIndex(n));
+	if (!val) { return *new Value();}
+	return *(val->getIndex(n));
 }
 
 Value &Json::operator[](std::string s) {
-	if (val.getKey().compare(s) == 0) { return val;}
-	std::vector<Value*> e = val.getEdges();
+	if (!val) { return *new Value();}
+	if (val->getKey().compare(s) == 0) { return *val;}
+	std::vector<Value*> e = val->getEdges();
 	Value* v;
 	if (!e.empty()) {
 		for (auto it = e.cbegin(); it != e.cend(); ++it) {
@@ -73,21 +76,21 @@ Value &Json::operator[](std::string s) {
 		}
 	}
 	v = new Value();
-	val.getEdges().push_back(v);
-	v->getParents().push_back(&val);
+	val->getEdges().push_back(v);
+	v->getParents().push_back(val);
 	return *v;
 }
 Json &Json::operator+=(Value& v) {
 	Value* tmp = &v;
 	while (tmp) {
-		val.getEdges().push_back(tmp);
-		tmp->getParents().push_back(&val);
+		val->getEdges().push_back(tmp);
+		tmp->getParents().push_back(val);
 		tmp = tmp->getNext();
 	}
 	return *this;
 }
 Json &Json::operator<<=(Value& v) {
-	val.Clone(v);
+	val->Clone(v);
 	return *this;
 }
 
@@ -443,7 +446,7 @@ Value &Value::operator!()
 }
 
 int sizeOf(Json obj){
-	return obj.getVal().getEdges().size();
+	return obj.getVal()->getEdges().size();
 }
 
 int sizeOf(Value* v){
@@ -451,16 +454,19 @@ int sizeOf(Value* v){
 }
 
 std::string isEmpty(Json obj){
-	Value val = obj.getVal();
-	return (!val.getEdges().size()) ? "TRUE" : "FALSE";
+	Value* val = obj.getVal();
+	return (!val->getEdges().size() && val->getType() == t_null) ? "TRUE" : "FALSE";
 }
 
 std::string isEmpty(Value *v){
-	return (!v->getEdges().size()) ? "TRUE" : "FALSE";
+	return (!v->getEdges().size() && v->getType() == t_null) ? "TRUE" : "FALSE";
 }
 
 std::string hasKey(Json& obj, std::string s) {
-	Value* tmp = dfs_find(s, &obj.getVal());
+	if (isEmpty(obj).compare("TRUE")) { return "FALSE";}
+	std::cout << "AS1" << std::endl;
+	Value* tmp = dfs_find(s, (obj.getVal()));
+	std::cout << "AS2" << std::endl;
 	return (tmp != nullptr) ? "TRUE" : "FALSE";
 }
 
@@ -471,7 +477,7 @@ std::string hasKey(Value *v, std::string s){
 }
 
 std::string getType(Json obj){
-	switch (obj.getVal().getType()) {
+	switch (obj.getVal()->getType()) {
 		case t_null: 		return "null";
 		case t_num:			return "number";
 		case t_float:		return "float";
@@ -495,7 +501,7 @@ std::string getType(Value *v){
 	}
 }
 void erase(Json* j) {
-	dfs_erase(&(j->getVal()));
+	dfs_erase((j->getVal()));
 }
 void erase (Value* v) {
 	dfs_erase(v);

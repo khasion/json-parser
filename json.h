@@ -94,11 +94,11 @@ void dfs_erase(Value* v);
 class Json
 {
 private:
-	Value val;
+	Value* val;
 public:
 	Json();
-	Value& getVal()				{ return val;}
-	Json &operator=(Value v) 	{ val = v; return *this;}
+	Value* getVal()				{ return val;}
+	Json &operator=(Value& v) 	{ val = &v; return *this;}
 	Json &operator+=(Value& v);
 	Json &operator<<=(Value& v);
 	Value &operator[](int);
@@ -106,7 +106,7 @@ public:
 
 	friend std::ostream &operator<<(std::ostream &os, Json &j)
 	{
-		Value* v = &j.getVal();
+		Value* v = j.getVal();
 		os << "{";
 		dfs_print(os, v);
 		os << "}";
