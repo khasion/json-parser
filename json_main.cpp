@@ -38,7 +38,7 @@ PROGRAM_BEGIN
 
 	PRINT(week_temp)
 	SET week_temp[2] ASSIGN NUMBER(22)
-	SET week_temp APPEND NUMBER(23), NUMBER(22), NUMBER(20)
+	SET week_temp APPEND (NUMBER(23), NUMBER(22), NUMBER(20))
 	PRINT(week_temp)
 
 	PRINT std
@@ -54,7 +54,8 @@ PROGRAM_BEGIN
 	PRINT IS_EMPTY(empty_obj)
 	PRINT HAS_KEY(empty_obj, "a")
 	PRINT TYPE_OF(empty_obj)
-	PRINT std[0]
+	PRINT std[0]["first"]
+	PRINT (STRING("HAS KEY? "), HAS_KEY(empty_obj, "a"))
 
 	/*SET obj["lesson"] ASSIGN NUMBER(3529)
 

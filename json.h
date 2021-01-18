@@ -26,14 +26,15 @@ public:
 	Value (bool b);
 	Value (std::initializer_list<Value> v);
 	/*Getters */
-	vType 					getType(void) 	{ return type;}
-	double 					getNum(void) 	{ return n;}
-	std::string 			getString(void) {return str;}
-	bool 						getBool(void) 	{ return b;}
-	Value* 					getIndex(int i) {return (i < edges.size()) ? edges[i] : NULL;}
-	std::vector<Value*>& getEdges(void)	{ return edges;}
-	Value*					getNext(void)	{ return next;}
-	std::string				getKey(void)	{ return key;}
+	vType 					getType(void) 		{ return type;}
+	double 					getNum(void) 		{ return n;}
+	std::string 			getString(void) 	{ return str;}
+	bool 						getBool(void) 		{ return b;}
+	Value* 					getIndex(int i) 	{ return (i < edges.size()) ? edges[i] : NULL;}
+	std::vector<Value*>& getParents(void)	{ return parents;}
+	std::vector<Value*>& getEdges(void)		{ return edges;}
+	Value*					getNext(void)		{ return next;}
+	std::string				getKey(void)		{ return key;}
 
 	/*Setters */
 	void setVal (vType _t) 				{ type = _t;}
@@ -82,6 +83,7 @@ private:
 	double n;
 	std::string str;
 	bool b;
+	std::vector<Value*> parents;
 	std::vector<Value*> edges;
 	Value* next = nullptr;
 };

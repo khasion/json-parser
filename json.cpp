@@ -6,6 +6,7 @@ void dfs_print (std::ostream &os, Value* v) {
 
 	if (v->getType() == t_array) {os << "[";}
 	if (v->getType() == t_object) {os << "{";}
+	Value* tmp = v->getNext();
 	for (auto it = e.cbegin(); it != e.cend(); ++it) {
 		if ( (v->getType() != t_array && v->getType() != t_object)
 				|| it != e.cbegin()) {
@@ -29,13 +30,25 @@ Value* dfs_find (std::string s, Value* v) {
 	}
 	return nullptr;
 }
+void removeFromParents (Value* v) {
+	std::vector<Value*> p = v->getParents();
+	for (auto it = p.cbegin(); it != p.cend(); ++it) {
+		std::vector<Value*> e = (*it)->getEdges();
+		for (auto jt = e.cbegin(); jt != e.cend(); ++jt) {
+			if ((*jt) == v) {jt = e.erase(jt);}
+			if (jt == e.cend()) { break;}
+		}
+	}
+}
 void dfs_erase (Value* v) {
 	std::vector<Value*> e = v->getEdges();
-	for (auto it = e.cbegin(); it != e.cend(); ++it) {
-		dfs_erase(*it);
+	if (!e.empty()) {
+		for (auto it = e.cbegin(); it != e.cend(); ++it) {
+			dfs_erase(*it);
+		}
 	}
+	removeFromParents(v);
 	free(v);
-	v = (Value*)NULL;
 }
 
 Json::Json () {}
@@ -58,12 +71,14 @@ Value &Json::operator[](std::string s) {
 	}
 	v = new Value();
 	val.getEdges().push_back(v);
+	v->getParents().push_back(&val);
 	return *v;
 }
 Json &Json::operator+=(Value& v) {
 	Value* tmp = &v;
 	while (tmp) {
 		val.getEdges().push_back(tmp);
+		tmp->getParents().push_back(&val);
 		tmp = tmp->getNext();
 	}
 	return *this;
@@ -73,9 +88,8 @@ Json &Json::operator<<=(Value& v) {
 	return *this;
 }
 void Json::operator delete (void* j) {
-	dfs_erase(&((Json*)j)->getVal());
+	dfs_erase(&(static_cast<Json*>(j))->getVal());
 	free(j);
-	j = (Json*)NULL;
 }
 
 Value::Value()
@@ -105,6 +119,7 @@ Value::Value (std::initializer_list<Value> v) {
 		Value* temp = new Value();
 		temp->Clone ((*it));
 		edges.push_back(temp);
+		temp->getParents().push_back(this);
 	}
 }
 
@@ -146,6 +161,7 @@ Value &Value::operator+=(Value &v){
 	Value* tmp = &v;
 	while (tmp) {
 		this->edges.push_back(tmp);
+		tmp->getParents().push_back(this);
 		tmp = tmp->next;
 	}
 	return *this;
@@ -162,6 +178,7 @@ Value &Value::operator[](Value &v)
 	tmp = &v;
 	while (tmp) {
 		this->edges.push_back(tmp);
+		tmp->getParents().push_back(this);
 		tmp = tmp->next;
 	}
 	this->type = t_array;
@@ -182,6 +199,7 @@ Value &Value::operator[](std::string s) {
 	}
 	v = new Value();
 	edges.push_back(v);
+	v->getParents().push_back(this);
 	return *v;
 }
 
@@ -222,10 +240,12 @@ Value &Value::operator+(Value& v)
 			break;
 		case t_array:
 			this->edges.push_back(&v);
+			v.getParents().push_back(this);
 			tmp = this;
 			break;
 		case t_object:
 			this->edges.push_back(&v);
+			v.getParents().push_back(this);
 			tmp = this;
 			break;
 		default:
@@ -423,7 +443,7 @@ Value &Value::operator!()
 	return *tmp;
 }
 void Value::operator delete (void* v) {
-	dfs_erase((Value*)v);
+	dfs_erase(static_cast<Value*>(v));
 }
 
 int sizeOf(Json obj){
