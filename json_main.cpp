@@ -42,16 +42,19 @@ PROGRAM_BEGIN
 	PRINT(week_temp)
 
 	PRINT std
-	SET std[0]["last"] ASSIGN STRING("edited") 
+	SET std[0]["last"] ASSIGN KEY(last) : STRING("edited")
 	SET std[1]	APPEND OBJECT {KEY(AM) : NUMBER(1111)}
 	PRINT std
 
 	PRINT empty_obj
 	SET empty_obj ASSIGN OBJECT{KEY(a) : STRING("alpha")}
 	SET empty_obj["new"] ASSIGN STRING("not found")
-	PRINT empty_obj
-	ERASE week_temp[1]
-	PRINT week_temp
+
+	PRINT SIZE_OF(week_temp)
+	PRINT IS_EMPTY(empty_obj)
+	PRINT HAS_KEY(empty_obj, "a")
+	PRINT TYPE_OF(empty_obj)
+	PRINT std[0]
 
 	/*SET obj["lesson"] ASSIGN NUMBER(3529)
 

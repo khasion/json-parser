@@ -16,7 +16,19 @@ void dfs_print (std::ostream &os, Value* v) {
 	if (v->getType() == t_array) {os << "]";}
 	if (v->getType() == t_object) {os << "}";}
 }
-
+Value* dfs_find (std::string s, Value* v) {
+	if (v->getKey().compare(s) == 0) {
+		return v;
+	}
+	std::vector<Value*> e = v->getEdges();
+	for (auto it = e.cbegin(); it != e.cend(); ++it) {
+		Value *tmp = dfs_find(s, (*it));
+		if (v != nullptr) {
+			return v;
+		}
+	}
+	return nullptr;
+}
 void dfs_erase (Value* v) {
 	std::vector<Value*> e = v->getEdges();
 	for (auto it = e.cbegin(); it != e.cend(); ++it) {
@@ -25,6 +37,8 @@ void dfs_erase (Value* v) {
 	free(v);
 	v = (Value*)NULL;
 }
+
+Json::Json () {}
 
 Value &Json::operator[](int n) {
 	return *(val.getIndex(n));
@@ -121,6 +135,11 @@ std::string Value::toString (void) {
 			break;
 	}
 	return tmp;
+}
+
+std::ostream &operator<<(std::ostream &os, Value &v) {
+	dfs_print(os, &v);
+	return os;
 }
 
 Value &Value::operator+=(Value &v){
@@ -405,4 +424,55 @@ Value &Value::operator!()
 }
 void Value::operator delete (void* v) {
 	dfs_erase((Value*)v);
+}
+
+int sizeOf(Json obj){
+	return obj.getVal().getEdges().size();
+}
+
+int sizeOf(Value* v){
+	return v->getEdges().size();
+}
+
+std::string isEmpty(Json obj){
+	Value val = obj.getVal();
+	return (!val.getEdges().size()) ? "TRUE" : "FALSE";
+}
+
+std::string isEmpty(Value *v){
+	return (!v->getEdges().size()) ? "TRUE" : "FALSE";
+}
+
+std::string hasKey(Json& obj, std::string s) {
+	Value* tmp = dfs_find(s, &obj.getVal());
+	return (tmp != nullptr) ? "TRUE" : "FALSE";
+}
+
+std::string hasKey(Value *v, std::string s){
+	Value* tmp = dfs_find(s, v);
+	return (tmp != nullptr) ? "TRUE" : "FALSE";
+}
+
+std::string getType(Json obj){
+	switch (obj.getVal().getType()) {
+		case t_null: 		return "null";
+		case t_num:			return "number";
+		case t_float:		return "float";
+		case t_string:		return "string";
+		case t_bool:		return "bool";
+		case t_array:		return "array";
+		default :			return "object";
+	}
+}
+
+std::string getType(Value *v){
+	switch (v->getType()) {
+		case t_null: 		return "null";
+		case t_num:			return "number";
+		case t_float:		return "float";
+		case t_string:		return "string";
+		case t_bool:		return "bool";
+		case t_array:		return "array";
+		default :			return "object";
+	}
 }

@@ -14,7 +14,12 @@
 #define APPEND +=
 #define ERASE ; delete &
 
-#define PRINT ;std::cout <<
+#define SIZE_OF(x)		sizeOf(x)
+#define IS_EMPTY(x)		isEmpty(x)
+#define HAS_KEY(x,str)	hasKey(x, str)
+#define TYPE_OF(x)		getType(x)
+
+#define PRINT ;std::cout << std::endl <<
 
 #define PROGRAM_BEGIN int main() {
-#define PROGRAM_END ;return 0;}
+#define PROGRAM_END ;std::cout<<std::endl;return 0;}

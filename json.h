@@ -3,6 +3,7 @@
 #include <utility>
 #include <vector>
 #include <sstream>
+#include <set>
 
 enum vType
 {
@@ -33,6 +34,7 @@ public:
 	std::vector<Value*>& getEdges(void)	{ return edges;}
 	Value*					getNext(void)	{ return next;}
 	std::string				getKey(void)	{ return key;}
+
 	/*Setters */
 	void setVal (vType _t) 				{ type = _t;}
 	void setVal(double _n) 				{ n = _n;}
@@ -71,7 +73,9 @@ public:
 	Value &operator||(Value& v);
 	Value &operator!(void);
 
-	void	operator delete (void*);
+	friend std::ostream &operator<<(std::ostream &os, Value &v);
+
+	void operator delete (void*);
 private:
 	std::string key = "";
 	vType type;
@@ -83,30 +87,38 @@ private:
 };
 
 void 	dfs_print (std::ostream &os, Value* v);
-void dfs_erase (Value* v);
+Value* dfs_find (std::string s, Value* v);
 
 class Json
 {
 private:
 	Value val;
 public:
-	Json() {}
-	Value& getVal() 				{ return val;}
+	Json();
+	Value& getVal()				{ return val;}
 	Json &operator=(Value v) 	{ val = v; return *this;}
 	Json &operator+=(Value& v);
 	Json &operator<<=(Value& v);
 	Value &operator[](int);
 	Value &operator[](std::string);
-	void	operator delete(void*);
+
+	void operator delete (void*);
 
 	friend std::ostream &operator<<(std::ostream &os, Json &j)
 	{
-		int i = 0;
 		Value* v = &j.getVal();
 		os << "{";
 		dfs_print(os, v);
 		os << "}";
-		os << std::endl;
 		return os;
 	}
 };
+
+int 				sizeOf (Json);
+int 				sizeOf (Value*);
+std::string		isEmpty(Json);
+std::string		isEmpty(Value*);
+std::string		hasKey(Json&, std::string);
+std::string		hasKey(Value*, std::string);
+std::string		getType(Json);
+std::string		getType(Value*);
