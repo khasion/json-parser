@@ -26,14 +26,15 @@ public:
 	Value (bool b);
 	Value (std::initializer_list<Value> v);
 	/*Getters */
-	vType 					getType(void) 	{ return type;}
-	double 					getNum(void) 	{ return n;}
-	std::string 			getString(void) {return str;}
-	bool 						getBool(void) 	{ return b;}
-	Value* 					getIndex(int i) {return (i < edges.size()) ? edges[i] : NULL;}
-	std::vector<Value*>& getEdges(void)	{ return edges;}
-	Value*					getNext(void)	{ return next;}
-	std::string				getKey(void)	{ return key;}
+	vType 					getType(void) 		{ return type;}
+	double 					getNum(void) 		{ return n;}
+	std::string 			getString(void) 	{ return str;}
+	bool 						getBool(void) 		{ return b;}
+	Value* 					getIndex(int i) 	{ return (i < edges.size()) ? edges[i] : NULL;}
+	std::vector<Value*>& getParents(void)	{ return parents;}
+	std::vector<Value*>& getEdges(void)		{ return edges;}
+	Value*					getNext(void)		{ return next;}
+	std::string				getKey(void)		{ return key;}
 
 	/*Setters */
 	void setVal (vType _t) 				{ type = _t;}
@@ -75,38 +76,37 @@ public:
 
 	friend std::ostream &operator<<(std::ostream &os, Value &v);
 
-	void operator delete (void*);
 private:
 	std::string key = "";
 	vType type;
 	double n;
 	std::string str;
 	bool b;
+	std::vector<Value*> parents;
 	std::vector<Value*> edges;
 	Value* next = nullptr;
 };
 
 void 	dfs_print (std::ostream &os, Value* v);
 Value* dfs_find (std::string s, Value* v);
+void dfs_erase(Value* v);
 
 class Json
 {
 private:
-	Value val;
+	Value* val;
 public:
 	Json();
-	Value& getVal()				{ return val;}
-	Json &operator=(Value v) 	{ val = v; return *this;}
+	Value* getVal()				{ return val;}
+	Json &operator=(Value& v) 	{ val = &v; return *this;}
 	Json &operator+=(Value& v);
 	Json &operator<<=(Value& v);
 	Value &operator[](int);
 	Value &operator[](std::string);
 
-	void operator delete (void*);
-
 	friend std::ostream &operator<<(std::ostream &os, Json &j)
 	{
-		Value* v = &j.getVal();
+		Value* v = j.getVal();
 		os << "{";
 		dfs_print(os, v);
 		os << "}";
@@ -122,3 +122,5 @@ std::string		hasKey(Json&, std::string);
 std::string		hasKey(Value*, std::string);
 std::string		getType(Json);
 std::string		getType(Value*);
+void 				erase(Json*);
+void 				erase(Value*);
